@@ -21,7 +21,7 @@ To install this example application, run the following commands:
 git clone https://github.com/tozny/tozny-vue-auth-example.git
 cd tozny-vue-auth-example
 npm install
-npm start
+npm run serve
 ```
 
 ### Create a realm and app in Tozny
@@ -45,7 +45,7 @@ VUE_APP_REGISTRATION_TOKEN=
 
 This example uses the following libraries provided by Tozny:
 
-* [Tozny SDK](https://github.com/tozny/browser-sodium-sdk
+* [Tozny SDK](https://github.com/tozny/browser-sodium-sdk)
 
 ## Help
 
