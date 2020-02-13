@@ -36,17 +36,17 @@
         ...mapState(["toznyClient", "name"])
     },
     mounted(){
-      
+
       this.getNotes();
-      
+
     },
     methods: {
       async getNotes(){
-         let records = await this.toznyClient.storageClient.query(true, null, null, 'note').next();
+         let records = await this.toznyClient.storage.query(true, null, null, 'note').next();
          this.notes = records;
       },
       async writeNote(){
-        await this.toznyClient.storageClient.write('note', {'note': this.note});
+        await this.toznyClient.storage.writeRecord('note', {'note': this.note});
         this.getNotes();
       },
       async showToken(){
