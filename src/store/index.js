@@ -1,18 +1,16 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import Tozny from 'tozny-browser-sodium-sdk'
+import Tozny from '@toznysecure/sdk/browser'
 const realmName = process.env.VUE_APP_REALM_NAME;
 const appName = process.env.VUE_APP_APP_NAME;
 const brokerUrl = process.env.VUE_APP_BROKER_URL;
 const registrationToken = process.env.VUE_APP_REGISTRATION_TOKEN;
 
-const realmConfig = {
-    "realmName": realmName,
-    "appName": appName,
-    "brokerTargetUrl" : brokerUrl
-}
-const tozIDConfig = Tozny.Identity.Config.fromObject(realmConfig)
-const tozId = new Tozny.Identity(tozIDConfig)
+const tozId = new Tozny.identity.Realm(
+  realmName,
+  appName,
+  brokerUrl
+)
 
 Vue.use(Vuex)
 
@@ -20,7 +18,6 @@ export default new Vuex.Store({
   state: {
     toznyClient: false,
     name: ''
-
   },
   mutations: {
     SET_TOZNY_CLIENT(state, payload){
@@ -35,12 +32,12 @@ export default new Vuex.Store({
     LOGOUT(state){
       delete localStorage.clear();
     }
-    
+
   },
   actions: {
     async setToznyClient({commit}, payload){
       commit('SET_TOZNY_CLIENT', payload)
-      
+
     },
     logout({commit}){
       commit('LOGOUT')
@@ -59,8 +56,6 @@ export default new Vuex.Store({
         commit('SET_TOZNY_CLIENT', res)
         const token = await res.token()
         commit('SET_NAME', token)
-        
-
       }catch(err){
         console.log("Bad password")
         return err;
@@ -71,7 +66,7 @@ export default new Vuex.Store({
 
         // Requesting a reset from the TozID service and since
         // our realm is configured to let TozID broker the
-        // reset our email will be delivered by Tozny 
+        // reset our email will be delivered by Tozny
 
         // (if you toggle OFF the setting in your realm settings then this will fail)
 
@@ -85,7 +80,7 @@ export default new Vuex.Store({
         // First we verify the query parameters from the recovery link
         // and pass them to the complete recovery method and then
         // the next function performs the password change
-        const res = await tozId.completeRecovery(payload.otp, payload.noteId)
+        const res = await tozId.completeEmailRecovery(payload.otp, payload.noteId)
         await res.changePassword(payload.pass)
         return;
       }catch(err){
@@ -94,7 +89,9 @@ export default new Vuex.Store({
     },
     async register({commit}, payload){
       try{
-        const res = await tozId.register(payload.email, payload.pass, registrationToken, payload.email)
+        await tozId.register(payload.email, payload.pass, registrationToken, payload.email)
+        // Registration creates the identity with the server. Use login to start a full session.
+        const res = await tozId.login(payload.email, payload.pass)
         localStorage.setItem('toznyClient',JSON.stringify(res.serialize()))
         commit('SET_TOZNY_CLIENT', res)
         const token = await res.token()
@@ -104,7 +101,7 @@ export default new Vuex.Store({
         return err;
       }
     },
-    
+
   },
   getters: {
     loggedIn: state => !!state.toznyClient
