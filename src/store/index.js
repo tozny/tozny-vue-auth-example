@@ -43,7 +43,6 @@ export default new Vuex.Store({
       commit('LOGOUT')
     },
     async rehydrateTozny({commit}){
-
         const client = tozId.fromObject(localStorage.getItem('toznyClient'))
         commit('SET_TOZNY_CLIENT', client)
         const token = await client.token()

@@ -36,9 +36,7 @@
         ...mapState(["toznyClient", "name"])
     },
     mounted(){
-
       this.getNotes();
-
     },
     methods: {
       async getNotes(){
