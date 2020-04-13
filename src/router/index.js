@@ -20,9 +20,8 @@ export default new Router({
     { path: '/logout',
       beforeEnter (to, from, next) {
         store.dispatch("logout").then(
-          location.reload()
+          next('/login')
         )
-        
       }
     }
   ]
@@ -35,7 +34,7 @@ async function authRedirect (to, from, next) {
   if(!store.state.toznyClient && localStorage.getItem('toznyClient')){
     await store.dispatch('rehydrateTozny')
   }
- 
+
   if (!store.state.toznyClient) {
     next()
   } else {

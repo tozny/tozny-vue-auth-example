@@ -30,7 +30,9 @@ export default new Vuex.Store({
       state.name = claims['preferred_username'];
     },
     LOGOUT(state){
-      delete localStorage.clear();
+      state.name = '',
+      state.toznyClient =  false,
+      localStorage.clear()
     }
 
   },
@@ -56,20 +58,23 @@ export default new Vuex.Store({
         const token = await res.token()
         commit('SET_NAME', token)
       }catch(err){
-        console.log("Bad password")
-        return err;
+        if (err.message === 'Unauthorized') {
+          return new Error('Incorrect login information');
+        } else {
+          return err.message;
+        }
       }
     },
     async requestReset({commit}, payload){
       try{
 
         // Requesting a reset from the TozID service and since
-        // our realm is configured to let TozID broker the
-        // reset our email will be delivered by Tozny
+        // our realm is configured to let TozID broker the reset.
+        // Our email will be delivered by Tozny.
 
-        // (if you toggle OFF the setting in your realm settings then this will fail)
+        // (if you toggle the setting OFF in your realm settings then this will fail)
 
-        const res = await tozId.initiateRecovery(payload.email)
+        await tozId.initiateRecovery(payload.email)
       }catch(err){
         return err;
       }
@@ -81,7 +86,6 @@ export default new Vuex.Store({
         // the next function performs the password change
         const res = await tozId.completeEmailRecovery(payload.otp, payload.noteId)
         await res.changePassword(payload.pass)
-        return;
       }catch(err){
         return err;
       }

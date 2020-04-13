@@ -9,8 +9,8 @@
       <br>
       <button type="submit">Reset Password</button>
     </form>
-    <p v-if="error" class="error">Unable to verify the reset link.</p>
-    
+    <p v-if="error" class="error">{{error}}</p>
+
   </div>
 </template>
 
@@ -21,40 +21,34 @@
       return {
         email: '',
         pass: '',
-        error: false,
+        error: '',
         email_otp: '',
         note_id: ''
       }
     },
     computed: {
-     
+
     },
     mounted(){
-        this.error = false;
+        this.error = '';
         if(this.$route.query.email_otp && this.$route.query.note_id){
             this.email_otp = this.$route.query.email_otp;
             this.note_id = this.$route.query.note_id;
         }else{
-            this.error = true;
+            this.error = 'Unable to verify the reset link.';
         }
     },
     methods: {
       ...mapActions(['completeRecovery']),
       async submitReset () {
-        try{
-          await this.completeRecovery({otp: this.email_otp, noteId: this.note_id, pass: this.pass})
-          this.error = false;
-          this.$router.replace('/login')
-        }catch(err){
-          this.error = true;
+        this.error = ''
+        const err = await this.completeRecovery({otp: this.email_otp, noteId: this.note_id, pass: this.pass})
+        if (err) {
+          this.err = err.message
+          return
         }
+        this.$router.replace('/login')
       }
     }
   }
 </script>
-
-<style>
-  .error {
-    color: red;
-  }
-</style>
