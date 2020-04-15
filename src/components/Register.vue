@@ -12,7 +12,7 @@
         <input v-model="pass" type="password">
       </label><br>
       <button type="submit">Register</button>
-      <p v-if="error" class="error">Bad registration information or password.</p>
+      <p v-if="error" class="error">{{ error }}</p>
     </form>
   </div>
 </template>
@@ -24,7 +24,7 @@
       return {
         email: '',
         pass: '',
-        error: false
+        error: '',
       }
     },
     computed: {
@@ -35,26 +35,18 @@
     methods: {
       ...mapActions(['register']),
       async submitRegister () {
-        this.error = false;
+        this.error = '';
         if(!this.email || !this.pass){
-          this.error = true;
+          this.error = 'Bad registration information or password.';
           return;
         }
-        try{
-          await this.register({email: this.email, pass: this.pass})
-          this.error = false;
-          this.$router.replace(this.$route.query.redirect || '/dashboard')
-        }catch(err){
-          this.error = true;
+        const err = await this.register({email: this.email, pass: this.pass})
+        if (err) {
+          this.error = result.message;
+          return;
         }
-
+        this.$router.replace(this.$route.query.redirect || '/dashboard')
       }
     }
   }
 </script>
-
-<style>
-  .error {
-    color: red;
-  }
-</style>

@@ -28,7 +28,7 @@
   export default {
     data () {
       return {
-       
+
       }
     },
     computed: {
@@ -58,7 +58,11 @@
     text-decoration: none;
   }
 
-  a:hover {
+  a:hover,
+  .success {
     color: #4fc08d;
+  }
+  .error {
+    color: red;
   }
 </style>

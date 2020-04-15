@@ -20,9 +20,8 @@ export default new Router({
     { path: '/logout',
       beforeEnter (to, from, next) {
         store.dispatch("logout").then(
-          location.reload()
+          next('/login')
         )
-        
       }
     }
   ]
@@ -35,7 +34,7 @@ async function authRedirect (to, from, next) {
   if(!store.state.toznyClient && localStorage.getItem('toznyClient')){
     await store.dispatch('rehydrateTozny')
   }
- 
+
   if (!store.state.toznyClient) {
     next()
   } else {
@@ -46,14 +45,14 @@ async function authRedirect (to, from, next) {
 }
 
 // Before we allow access to protected routes the application should
-// validate that the user is properly authenticated use our vuex 
+// validate that the user is properly authenticated use our vuex
 // getter that is defined in the store
 
 async function requireAuth (to, from, next) {
   if(!store.state.toznyClient && localStorage.getItem('toznyClient')){
     await store.dispatch('rehydrateTozny')
   }
- 
+
   if (!store.state.toznyClient) {
     next({
       path: '/login',
