@@ -1,6 +1,6 @@
 # Vue.js App with TozId Authentication
 
-This example shows how to create a Vue.js application that uses Tozny's SDK to authenticate and enable end to end encryption in your application.
+This example shows how to create a Vue.js application that uses Tozny's SDK to authenticate and enable end to end encryption in your application. This is an example application and should not used as is for production purposes.
 
 Please read [the full guide](https://developers.tozny.com/tozid/guides/vue-with-tozid) to get a step by step walkthrough of how this application works.
 
